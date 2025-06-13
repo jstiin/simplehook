@@ -308,6 +308,7 @@ class SimpleHook:
 
         Args:
             url (str): URL of the image.
+            message (Optional[int], optional): String message.
             color (Optional[int], optional): Decimal integer color value between 0 and 65280. Defaults to None.
         """
 

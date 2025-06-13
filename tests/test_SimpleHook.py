@@ -26,6 +26,18 @@ def test_send_message(mocker):
         json={"content": "Test"})
 
 
+def test_send_message_empty(mocker):
+    response = httpx.Response(400, request=httpx.Request(
+        method="POST", url="https://test.test"))
+    mocker_post = mocker.patch.object(hook, "post", side_effect=httpx.HTTPStatusError(
+        message="Error!", request=response.request, response=response))
+
+    with pytest.raises(expected_exception=httpx.HTTPStatusError):
+        hook.send_message("")
+
+    mocker_post.assert_called_once()
+
+
 def test_post(mocker):
     mocker_post = mocker.patch("httpx.Client.post")
     mocker_response = mocker_post.return_value
@@ -196,5 +208,228 @@ def test_create_poll_len_error(mocker):
     with pytest.raises(expected_exception=ValueError, match="Length of emojis must match length of answers"):
         hook.create_poll(question="test", answers=[
                          "test", "test"], emojis=["😊"])
+
+    mocker_post.assert_not_called()
+
+
+def test_create_poll_answers_len_error(mocker):
+    mocker_post = mocker.patch.object(hook, "post")
+
+    with pytest.raises(expected_exception=ValueError, match="Answer length cannot exceed 55 characters"):
+        hook.create_poll(question="test", answers=[
+                         "tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt"])
+
+    mocker_post.assert_not_called()
+
+
+def test_create_poll_question_len_error(mocker):
+    mocker_post = mocker.patch.object(hook, "post")
+
+    with pytest.raises(expected_exception=ValueError, match="Question length cannot exceed 300 characters"):
+        hook.create_poll(
+            question="ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt",
+            answers=["test"]
+        )
+
+    mocker_post.assert_not_called()
+
+
+def test_create_poll_int_to_str(mocker):
+    mocker_post = mocker.patch.object(hook, "post")
+
+    text = "test"
+    text2 = "test"
+    emoji = 100000
+
+    expected_body = {
+        "poll": {
+            "question": {
+                "text": text
+            },
+            "answers":
+                [{
+                    "poll_media": {
+                        "text": text2,
+                        "emoji": {
+                            "id": str(emoji)
+                        }
+                    },
+                }
+            ],
+        }
+    }
+
+    hook.create_poll(question=text, answers=[text2], emojis=[emoji])
+
+    mocker_post.assert_called_once_with(json=expected_body)
+
+
+def test_send_embedded_message_full(mocker):
+    mocker_post = mocker.patch.object(hook, "post")
+
+    expected_body = {
+        "embeds": [{
+            "title": "test",
+            "color": 2
+        }]
+    }
+
+    hook.send_embedded_message(title="test", color=2)
+
+    mocker_post.assert_called_with(json=expected_body)
+
+
+def test_send_embedded_message_empty_title(mocker):
+    response = httpx.Response(400, request=httpx.Request(
+        "POST", "https://www.test.test"))
+    mocker_post = mocker.patch.object(hook, "post", side_effect=httpx.HTTPStatusError(
+        message="Error!", request=response.request, response=response))
+
+    with pytest.raises(expected_exception=httpx.HTTPStatusError):
+        hook.send_embedded_message(title="")
+
+    mocker_post.assert_called_once()
+
+
+def test_send_embedded_author_full(mocker):
+    mocker_post = mocker.patch.object(hook, "post")
+
+    expected_body = {
+        "embeds": [
+            {
+                "author": {
+                    "name": "test",
+                    "url": "https://test.test",
+                    "icon_url": "https://test.test"
+                },
+                "description": "test",
+                "color": 2
+            },
+        ]
+    }
+
+    hook.send_embedded_author(name="test", avatar_url="https://test.test",
+                              url="https://test.test", description="test", color=2)
+
+    mocker_post.assert_called_once_with(json=expected_body)
+
+
+def test_send_embedded_author_empty_name(mocker):
+    response = httpx.Response(400, request=httpx.Request(
+        method="POST", url="https://test.test"))
+    mocker_post = mocker.patch.object(hook, "post", side_effect=httpx.HTTPStatusError(
+        message="Error!", request=response.request, response=response))
+
+    with pytest.raises(expected_exception=httpx.HTTPStatusError):
+        hook.send_embedded_author(name="", avatar_url="https://test.test")
+
+    mocker_post.assert_called_once()
+
+
+def test_send_embedded_url_full(mocker):
+    mocker_post = mocker.patch.object(hook, "post")
+
+    expected_body = {
+        "embeds": [
+            {
+                "title": "test",
+                "url": "https://test.test",
+                "color": 2
+            }
+        ]
+    }
+
+    hook.send_embedded_url(title="test", url="https://test.test", color=2)
+
+    mocker_post.assert_called_once_with(json=expected_body)
+
+
+def test_send_embedded_url_empty_title(mocker):
+    response = httpx.Response(400, request=httpx.Request(
+        method="POST", url="https://test.test"))
+    mocker_post = mocker.patch.object(hook, "post", side_effect=httpx.HTTPStatusError(
+        message="Error!", request=response.request, response=response))
+    expected_body = {
+        "embeds": [
+            {
+                "title": "",
+                "url": "https://test.test",
+                "color": 2
+            }
+        ]
+    }
+
+    with pytest.raises(expected_exception=httpx.HTTPStatusError):
+        hook.send_embedded_url(url="https://test.test", title="")
+
+    mocker_post.assert_called_once()
+
+
+def test_send_embedded_url_image_full(mocker):
+    mocker_post = mocker.patch.object(hook, "post")
+
+    expected_body = {
+        "content": "test",
+        "embeds": [{
+            "image": {
+                "url": "https://test.test"
+            },
+            "color": 2
+        }]
+    }
+
+    hook.send_embedded_url_image(
+        url="https://test.test", message="test", color=2)
+
+    mocker_post.assert_called_once_with(json=expected_body)
+
+
+def test_send_embedded_url_image_empty_url(mocker):
+    response = httpx.Response(400, request=httpx.Request(
+        method="POST", url="https://test.test"))
+    mocker_post = mocker.patch.object(hook, "post", side_effect=httpx.HTTPStatusError(
+        message="Error!", request=response.request, response=response))
+
+    with pytest.raises(expected_exception=httpx.HTTPStatusError):
+        hook.send_embedded_url_image(url="")
+
+    mocker_post.assert_called_once()
+
+
+def test_send_embedded_field_full(mocker):
+    mocker_post = mocker.patch.object(hook, "post")
+
+    expected_body = {
+        "embeds": [{
+            "fields": [{
+                "name": "test",
+                "value": "test",
+                "inline": True
+            }],
+            "color": 2
+        }]
+    }
+
+    hook.send_embedded_field(names=["test"], values=[
+                             "test"], inline=[True], color=2)
+
+    mocker_post.assert_called_once_with(json=expected_body)
+
+
+def test_send_embedded_fields_empty_list(mocker):
+    mocker_post = mocker.patch.object(hook, "post")
+
+    with pytest.raises(expected_exception=ValueError, match="Lists must contain at least one element each!"):
+        hook.send_embedded_field(names=[], values=[], inline=[], color=2)
+
+    mocker_post.assert_not_called()
+
+
+def test_send_embedded_fields_not_same_len(mocker):
+    mocker_post = mocker.patch.object(hook, "post")
+
+    with pytest.raises(expected_exception=ValueError, match="Lengths of all lists must match!"):
+        hook.send_embedded_field(names=["test", "test"], values=[
+                                 "test"], inline=[True], color=2)
 
     mocker_post.assert_not_called()
