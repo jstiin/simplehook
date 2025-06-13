@@ -1,3 +1,14 @@
+# ⚠️ Be Aware
+
+There are cloned, forked, or unofficial versions of this repository circulating online that **contain malware** and may compromise your system.
+This repository is the **official source**, as verified by its complete commit history, active maintenance, and updates directly from the original author.
+
+If you are unsure whether you're using the correct version, always refer to:  
+👉 **[Official Repository](https://github.com/jstiin/simplehook-discord)**
+
+Using unofficial or outdated copies may result in missing features, bugs, or security issues not present in the official version.
+
+
 # SimpleHook
 
 **SimpleHook** is a minimalistic Python wrapper for Discord webhooks. It allows you to easily send messages, files, and embedded content to a Discord channel using just a few lines of code.
