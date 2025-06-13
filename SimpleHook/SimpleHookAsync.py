@@ -23,7 +23,7 @@ class SimpleHookAsync:
 
         self.webhook_url = webhook_url
 
-    async def __post(self, **kwargs) -> None:
+    async def post(self, **kwargs) -> None:
         """
         Helper method to send a POST request.
 
@@ -35,9 +35,10 @@ class SimpleHookAsync:
         """
 
         async with httpx.AsyncClient() as client:
-            await client.post(url=self.webhook_url, **kwargs)
+           r = await client.post(url=self.webhook_url, **kwargs)
+           r.raise_for_status()
 
-    def __validate(self, color: int) -> int:
+    def validate(self, color: int) -> int:
         """
         Validate the color value to ensure it is within the allowed range.
 
@@ -67,7 +68,7 @@ class SimpleHookAsync:
             "content": message
         }
 
-        await self.__post(json=body)
+        await self.post(json=body)
 
     async def send_customized_message(
         self,
@@ -107,7 +108,7 @@ class SimpleHookAsync:
         if tts:
             body["tts"] = tts
 
-        await self.__post(json=body)
+        await self.post(json=body)
 
     async def send_file(self, file_path: str) -> None:
         """
@@ -125,7 +126,7 @@ class SimpleHookAsync:
             "file": (filename, file)
         }
 
-        await self.__post(files=file_body)
+        await self.post(files=file_body)
 
     async def send_embedded_files(self, paths: list[str], message: Optional[str] = None, color: Optional[int] = None) -> None:
         """
@@ -155,7 +156,7 @@ class SimpleHookAsync:
                     "image": {"url": f"attachment://"+filename}
                 })
             if color is not None:
-                color = self.__validate(color)
+                color = self.validate(color)
                 embeds[index]["color"] = color
 
         payload = {
@@ -163,7 +164,7 @@ class SimpleHookAsync:
             "embeds": embeds
         }
 
-        await self.__post(data={"payload_json": json.dumps(payload)}, files=files)
+        await self.post(data={"payload_json": json.dumps(payload)}, files=files)
 
     async def create_poll(
         self,
@@ -232,7 +233,7 @@ class SimpleHookAsync:
                 raise ValueError(
                     "Length of emojis must match length of answers")
 
-        await self.__post(json=body)
+        await self.post(json=body)
 
     async def send_embedded_message(self, title: str, color: Optional[int] = None) -> None:
         """Send an embedded message.
@@ -249,10 +250,10 @@ class SimpleHookAsync:
         body["embeds"].append({"title": title})
 
         if color is not None:
-            color = self.__validate(color)
+            color = self.validate(color)
             body["embeds"][0]["color"] = color
 
-        await self.__post(json=body)
+        await self.post(json=body)
 
     async def send_embedded_author(self, name: str, avatar_url: str, url: Optional[str] = None,  description: Optional[str] = None, color: Optional[int] = None) -> None:
         """Send an embedded author message.
@@ -278,10 +279,10 @@ class SimpleHookAsync:
             body["embeds"][0]["description"] = description
 
         if color is not None:
-            color = self.__validate(color)
+            color = self.validate(color)
             body["embeds"][0]["color"] = color
 
-        await self.__post(json=body)
+        await self.post(json=body)
 
     async def send_embedded_url(self, title: str, url: str, color: Optional[int] = None) -> None:
         """Send an embedded message with a hyperlink.
@@ -299,10 +300,10 @@ class SimpleHookAsync:
         body["embeds"].append({"title": title, "url": url})
 
         if color is not None:
-            color = self.__validate(color)
+            color = self.validate(color)
             body["embeds"][0]["color"] = color
 
-        await self.__post(json=body)
+        await self.post(json=body)
 
     async def send_embedded_url_image(self, url: str, message: Optional[str] = None, color: Optional[int] = None) -> None:
         """Send an embedded image via URL.
@@ -320,10 +321,10 @@ class SimpleHookAsync:
         body["embeds"].append({"image": {"url": url}})
 
         if color is not None:
-            color = self.__validate(color)
+            color = self.validate(color)
             body["embeds"][0]["color"] = color
 
-        await self.__post(json=body)
+        await self.post(json=body)
 
     async def send_embedded_field(self, names: list[str], values: list[str], inline: list[bool], color: Optional[int] = None) -> None:
         """
@@ -359,7 +360,7 @@ class SimpleHookAsync:
             raise ValueError("Lengths of all lists must match!")
 
         if color is not None:
-            color = self.__validate(color)
+            color = self.validate(color)
             body["embeds"][0]["color"] = color
 
-        await self.__post(json=body)
+        await self.post(json=body)
