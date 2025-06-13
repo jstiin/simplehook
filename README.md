@@ -6,8 +6,11 @@ This repository is the **official source**, as verified by its complete commit h
 If you are unsure whether you're using the correct version, always refer to:  
 👉 **[Official Repository](https://github.com/jstiin/simplehook-discord)**
 
-Using unofficial or outdated copies may result in missing features, bugs, or security issues not present in the official version.
+Using unofficial or outdated copies may result in missing features, bugs, or security issues not present in the official version.<br>
 
+**DO NOT** download any **.zip** files from unofficial sources!
+
+This library is officially published on [PyPi](https://pypi.org/project/your-library-name/) — installing via PyPi is the **preferred and safest way** to acquire it.
 
 # SimpleHook
 
