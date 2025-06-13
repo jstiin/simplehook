@@ -10,7 +10,7 @@ Using unofficial or outdated copies may result in missing features, bugs, or sec
 
 **DO NOT** download any **.zip** files from unofficial sources!
 
-This library is officially published on [PyPi](https://pypi.org/project/your-library-name/) — installing via PyPi is the **preferred and safest way** to acquire it.
+This library is officially published on [PyPi](https://pypi.org/project/simplehook/) — installing via PyPi is the **preferred and safest way** to acquire it.
 
 # SimpleHook
 
