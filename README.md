@@ -1,6 +1,6 @@
 # ⚠️ Be Aware
 
-There are cloned, forked, or unofficial versions of this repository circulating online that **contain malware** and may compromise your system.
+There are **cloned**, **forked**, or **unofficial versions** of this repository circulating online that **contain malware** and may compromise your system.
 This repository is the **official source**, as verified by its complete commit history, active maintenance, and updates directly from the original author.
 
 If you are unsure whether you're using the correct version, always refer to:  
