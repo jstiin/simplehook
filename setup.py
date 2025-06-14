@@ -24,5 +24,6 @@ setup(
         "License :: OSI Approved :: GNU Affero General Public License v3",
     ],
     keywords="discord webhook messaging",
-    license="AGPL-3.0-only"
+    license="AGPL-3.0-only",
+    include_package_data=True,
 )
