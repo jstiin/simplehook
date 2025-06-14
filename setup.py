@@ -15,7 +15,7 @@ setup(
     url="https://github.com/jstiin/simplehook",
     packages=find_packages(),
     install_requires=["aiofiles", "httpx"],
-    extra_requres={
+    extras_require={
         "dev": ["pytest", "pytest-cov", "pytest-async"]
     },
     python_requires='>=3.7',
